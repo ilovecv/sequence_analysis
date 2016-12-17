@@ -167,11 +167,12 @@ def train(FLAGS):
     init = tf.initialize_all_variables()    
     
 
-    
+    config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=FLAGS.log_device_placement)
+    config.gpu_options.allow_growth = True
+    config.gpu_options.per_process_gpu_memory_fraction = FLAGS.per_process_gpu_memory_fraction
+
     # Build an initialization operation to run below.
-    sess = tf.Session(config=tf.ConfigProto(
-        allow_soft_placement=True,
-        log_device_placement=FLAGS.log_device_placement, allow_growth=True, per_process_gpu_memory_fraction=0.4))
+    sess = tf.Session(config=config)
     sess.run(init)
     summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph)
 
