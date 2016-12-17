@@ -171,7 +171,7 @@ def train(FLAGS):
     # Build an initialization operation to run below.
     sess = tf.Session(config=tf.ConfigProto(
         allow_soft_placement=True,
-        log_device_placement=FLAGS.log_device_placement))
+        log_device_placement=FLAGS.log_device_placement, allow_growth=True, per_process_gpu_memory_fraction=0.4))
     sess.run(init)
     summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph)
 
