@@ -18,7 +18,7 @@ def eval(FLAGS):
     sequence_classifier = Sequence_Classifier(FLAGS)
 
     
-    sequence, labels = sequence_reader.get_next_training_batch(FLAGS)
+    sequence, labels = sequence_reader.get_next_test_batch(FLAGS)
 
     # Build inference Graph.
     logits = sequence_classifier.inference(sequence)
