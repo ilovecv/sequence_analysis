@@ -151,9 +151,7 @@ class Sequence_Classifier_With_Convolution():
         with tf.variable_scope(self.name):
             
             # Run the 1-D conv
-            filter = _variable_with_weight_decay('kernel_weights', shape=[3, self.input_size, self.feature_map_size],
-                                         stddev=5e-2,
-                                         wd=0.0)
+            filter = _variable_with_weight_decay('kernel_weights', shape=[3, self.input_size, self.feature_map_size], FLAGS=self.flags)
             input_sequence = tf.nn.conv1d(input_sequence_orig, filter, stride=2, padding="SAME")
 
             print 'after applying cnn', input_sequence.get_shape()
