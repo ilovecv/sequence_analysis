@@ -88,7 +88,12 @@ class Sequence_Classifier():
         self.sequence_size = FLAGS.sequence_size
         self.output_size = FLAGS.output_size
         self.name = "sequence_model"
-
+        print 'Initializing Sequence Original Classifier'
+        print 'input size:', FLAGS.input_size
+        print 'batch size:', FLAGS.batch_size
+        print 'sequence size:', FLAGS.sequence_size
+        print 'hidden size:', FLAGS.number_hidden
+        
     def inference(self, input_sequence, reuse=False):      
         with tf.variable_scope(self.name):
             if reuse == True:
@@ -112,6 +117,7 @@ class Sequence_Classifier():
             sequence_classifier_recurrent_cell = tf.nn.rnn_cell.LSTMCell(self.number_hidden, forget_bias=1.0, state_is_tuple=True)
             
             if (self.flags.dropout == True):
+                print ('adding dropout layer to LSTM')
                 # adding dropout to the input_sequence-hidden layer weights
                 sequence_classifier_recurrent_cell = tf.nn.rnn_cell.DropoutWrapper(sequence_classifier_recurrent_cell, output_keep_prob=self.flags.keep_prob)
 
@@ -145,7 +151,12 @@ class Sequence_Classifier_With_Convolution():
         self.output_size = FLAGS.output_size
         self.feature_map_size = FLAGS.feature_map_size
         self.name = "sequence_model"
-        self.feature_map_size = 32      
+        print 'Initializing Convolutional Sequence Classifier'
+        print 'input size:', FLAGS.input_size
+        print 'batch size:', FLAGS.batch_size
+        print 'sequence size:', FLAGS.sequence_size
+        print 'feature map size:', FLAGS.feature_map_size
+        print 'hidden size:', FLAGS.number_hidden
 
     def inference(self, input_sequence_orig, reuse=False):
         with tf.variable_scope(self.name):
@@ -173,6 +184,7 @@ class Sequence_Classifier_With_Convolution():
             sequence_classifier_recurrent_cell = tf.nn.rnn_cell.LSTMCell(self.number_hidden, forget_bias=1.0, state_is_tuple=True)
             
             if (self.flags.dropout == True):
+                print ('adding dropout layer to LSTM')
                 # adding dropout to the input_sequence-hidden layer weights
                 sequence_classifier_recurrent_cell = tf.nn.rnn_cell.DropoutWrapper(sequence_classifier_recurrent_cell, output_keep_prob=self.flags.keep_prob)
 
