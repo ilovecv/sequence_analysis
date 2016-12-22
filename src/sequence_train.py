@@ -11,6 +11,7 @@ from sequence_model import loss
 import time
 import re
 import numpy as np
+from sequence_model import Sequence_Classifier_With_Convolution
 
 def variable_summaries(var, name):
     """Attach a lot of summaries to a Tensor."""
@@ -94,7 +95,12 @@ def average_gradients(tower_grads):
 def train(FLAGS):
     
     sequence_reader = Sequence_Reader(FLAGS)
-    sequence_classifier = Sequence_Classifier(FLAGS)
+    
+    if FLAGS.sequence_classifer_type == 1:
+        sequence_classifier = Sequence_Classifier(FLAGS)
+    else:
+        sequence_classifier = Sequence_Classifier_With_Convolution(FLAGS)
+        
     global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
     
     # Adam optimizer for loss

@@ -15,8 +15,10 @@ import numpy as np
 def eval(FLAGS):
     
     sequence_reader = Sequence_Reader(FLAGS)
-    sequence_classifier = Sequence_Classifier(FLAGS)
-
+    if FLAGS.sequence_classifer_type == 1:
+        sequence_classifier = Sequence_Classifier(FLAGS)
+    else:
+        sequence_classifier = Sequence_Classifier_With_Convolution(FLAGS)
     
     sequence, labels = sequence_reader.get_next_test_batch(FLAGS)
 
