@@ -99,6 +99,9 @@ class Sequence_Classifier():
             if reuse == True:
                 tf.get_variable_scope().reuse_variables()
                 
+            batch_mean1, batch_var1 = tf.nn.moments(input_sequence,[0])
+
+            input_sequence_bn = tf.nn.batch_normalization(input_sequence, batch_mean1, batch_var1, None, None, 0.00001)
                 
             # Define weights
 #             sequence_classifier_weights = tf.Variable(tf.random_normal([self.number_hidden, self.output_size]), name='output_weights')
@@ -107,7 +110,7 @@ class Sequence_Classifier():
             sequence_classifier_biases = _variable_with_weight_decay(name='output_biases', shape=[self.output_size], FLAGS=self.flags)
             
             #
-            sequence_classifier_input = tf.reshape(input_sequence, [self.batch_size, self.sequence_size, self.input_size]) 
+            sequence_classifier_input = tf.reshape(input_sequence_bn, [self.batch_size, self.sequence_size, self.input_size]) 
 
             # input_sequence shape: (batch_size, n_steps, input_size)    
             sequence_classifier_input = tf.transpose(sequence_classifier_input, [1, 0, 2])  # permute sequence_size and batch_size
@@ -160,10 +163,12 @@ class Sequence_Classifier_With_Convolution():
 
     def inference(self, input_sequence_orig, reuse=False):
         with tf.variable_scope(self.name):
-            
+            batch_mean1, batch_var1 = tf.nn.moments(input_sequence_orig,[0])
+
+            input_sequence_bn = tf.nn.batch_normalization(input_sequence_orig, batch_mean1, batch_var1, None, None, 0.00001)
             # Run the 1-D conv
             filter = _variable_with_weight_decay('kernel_weights', shape=[3, self.input_size, self.feature_map_size], FLAGS=self.flags)
-            input_sequence = tf.nn.conv1d(input_sequence_orig, filter, stride=2, padding="SAME")
+            input_sequence = tf.nn.conv1d(input_sequence_bn, filter, stride=2, padding="SAME")
 
             print 'after applying cnn', input_sequence.get_shape()
 
