@@ -7,6 +7,7 @@ import os
 import tensorflow as tf
 from sequence_reader import Sequence_Reader
 from sequence_model import Sequence_Classifier
+from sequence_model import Sequence_Classifier_With_Convolution
 import time
 import re
 import numpy as np
