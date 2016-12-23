@@ -53,7 +53,6 @@ def eval(FLAGS):
         for i in xrange(FLAGS.number_of_test_examples):
             estimated_labels, ground_truth = sess.run(test_op)
             estimated_labels = np.argmax(estimated_labels, axis=1)
-            local_confusion_matrix = np.zeros((FLAGS.output_size, FLAGS.output_size), dtype=np.int32)
             ground_truth = np.squeeze(ground_truth)
             for j in xrange(len(ground_truth)):                
                 confusion_matrix[ground_truth[j][-1], estimated_labels[j]] += 1
@@ -62,7 +61,12 @@ def eval(FLAGS):
                 if ground_truth[j][-1] == estimated_labels[j]:
                     correct += 1
             total += len(ground_truth)    
-    print('confusion_matrix', confusion_matrix)
+    
+    row_sums = confusion_matrix.sum(axis=1)
+    normalized_confusion_matrix = confusion_matrix / row_sums[:, np.newaxis]
+    print('Confusion Matrix', confusion_matrix)
+    print('Normalized Confusion Matrix', normalized_confusion_matrix)
     print ('accuracy:' + str(correct / total))
+    
     entire_gt = np.asanyarray(entire_gt, np.int32)
     entire_es = np.asanyarray(entire_es, np.int32)    
