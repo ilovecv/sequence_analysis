@@ -97,7 +97,7 @@ def eval(FLAGS):
                     correct += 1
             total += len(ground_truth)    
     print('confusion_matrix', confusion_matrix)
-    print ('accuracy:' + correct / total)
+    print ('accuracy:' + str(correct / total))
     entire_gt = np.asanyarray(entire_gt, np.int32)
     entire_es = np.asanyarray(entire_es, np.int32)
     cnf_matrix = compute_confusion_matrix(entire_gt, entire_es)
