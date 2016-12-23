@@ -43,7 +43,7 @@ def eval(FLAGS):
     saver = tf.train.Saver()
     tf.train.start_queue_runners(sess=sess)
 
-    confusion_matrix = np.zeros((FLAGS.output_size, FLAGS.output_size), dtype=np.int32)
+    confusion_matrix = np.zeros((FLAGS.output_size, FLAGS.output_size), dtype=np.float32)
     entire_gt = []
     entire_es = []
     total = 0.0
