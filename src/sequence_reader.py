@@ -114,7 +114,7 @@ class Sequence_Reader():
     
         """Construct input for test using the Reader ops."""
         
-        test_filenames = [os.path.join(FLAGS.data_dir, self.test_file_name_prefix + '%d' % i + self.test_file_name_postfix) for i in xrange(FLAGS.test_file_range[0], FLAGS.train_file_range[1])] 
+        test_filenames = [os.path.join(FLAGS.data_dir, self.test_file_name_prefix + '%d' % i + self.test_file_name_postfix) for i in xrange(FLAGS.test_file_range[0], FLAGS.test_file_range[1])] 
         for f in test_filenames:
             if not tf.gfile.Exists(f):
                 raise ValueError('Failed to find file: ' + f)
