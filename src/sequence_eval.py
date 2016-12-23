@@ -13,7 +13,7 @@ import time
 import re
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix as compute_confusion_matrix
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -96,7 +96,7 @@ def eval(FLAGS):
     print('confusion_matrix', confusion_matrix)
     entire_gt = np.asanyarray(entire_gt, np.int32)
     entire_es = np.asanyarray(entire_es, np.int32)
-    cnf_matrix = confusion_matrix(entire_gt, entire_es)
+    cnf_matrix = compute_confusion_matrix(entire_gt, entire_es)
     
     plt.figure()
     plot_confusion_matrix(cnf_matrix, classes=classes, normalize=True,
