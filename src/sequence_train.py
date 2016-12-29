@@ -159,7 +159,7 @@ def train(FLAGS):
     #####################
     
     
-    for var in tf.all_variables():
+    for var in tf.trainable_variables():
         print var.name
         variable_summaries(var, var.name) 
     
