@@ -129,7 +129,7 @@ class Sequence_Reader():
         min_fraction_of_examples_in_queue = 0.4
         min_queue_examples = int(FLAGS.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * 
                                  min_fraction_of_examples_in_queue)
-        print ('Filling queue with %d sequences before starting to train. '
+        print ('Filling queue with %d sequences before starting to test. '
                'This will take a few minutes.' % min_queue_examples)
         
         # Generate a batch of sequences and labels by building up a queue of examples.

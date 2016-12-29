@@ -160,6 +160,7 @@ def train(FLAGS):
     
     
     for var in tf.all_variables():
+        print var
         variable_summaries(var, var.name) 
     
     
