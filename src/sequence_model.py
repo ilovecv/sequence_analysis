@@ -58,9 +58,11 @@ def loss(estimated_labels, ground_truth, variables, FLAGS):
     
     logits = estimated_labels[-1]
     labels = tf.squeeze(ground_truth[-1])
-    
-    
-    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, labels)
+    ratio = 0.2
+    class_weight = tf.constant([ratio, 1.0 - ratio])
+    weighted_logits = tf.mul(logits, class_weight) # shape [batch_size, 2]
+
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(weighted_logits, labels)
     
     cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
     
@@ -154,12 +156,16 @@ class Sequence_Classifier_With_Convolution():
         self.output_size = FLAGS.output_size
         self.feature_map_size = FLAGS.feature_map_size
         self.name = "sequence_model"
+        self.conv_size = FLAGS.conv_size
+        self.conv_stride = FLAGS.conv_stride
         print 'Initializing Convolutional Sequence Classifier'
         print 'input size:', FLAGS.input_size
         print 'batch size:', FLAGS.batch_size
         print 'sequence size:', FLAGS.sequence_size
         print 'feature map size:', FLAGS.feature_map_size
         print 'hidden size:', FLAGS.number_hidden
+        print 'convolution size:', FLAGS.conv_size
+        print 'convolution stride:', FLAGS.conv_stride
 
     def inference(self, input_sequence_orig, reuse=False):
         with tf.variable_scope(self.name):
@@ -167,8 +173,8 @@ class Sequence_Classifier_With_Convolution():
 
             input_sequence_bn = tf.nn.batch_normalization(input_sequence_orig, batch_mean1, batch_var1, None, None, 0.00001)
             # Run the 1-D conv
-            filter = _variable_with_weight_decay('kernel_weights', shape=[3, self.input_size, self.feature_map_size], FLAGS=self.flags)
-            input_sequence = tf.nn.conv1d(input_sequence_bn, filter, stride=2, padding="SAME")
+            filter = _variable_with_weight_decay('kernel_weights', shape=[self.conv_size, self.input_size, self.feature_map_size], FLAGS=self.flags)
+            input_sequence = tf.nn.conv1d(input_sequence_bn, filter, stride=self.conv_stride, padding="SAME")
 
             print 'after applying cnn', input_sequence.get_shape()
 
@@ -179,7 +185,7 @@ class Sequence_Classifier_With_Convolution():
             sequence_classifier_biases = _variable_with_weight_decay(name='output_biases', shape=[self.output_size], FLAGS=self.flags)
             
             #
-            sequence_classifier_input = tf.reshape(input_sequence, [self.batch_size, self.sequence_size / 2, self.feature_map_size]) 
+            sequence_classifier_input = tf.reshape(input_sequence, [self.batch_size, input_sequence.get_shape()[1], self.feature_map_size]) 
 
             # input_sequence shape: (batch_size, n_steps, input_size)    
             sequence_classifier_input = tf.transpose(sequence_classifier_input, [1, 0, 2])  # permute sequence_size and batch_size
