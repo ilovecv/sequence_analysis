@@ -61,12 +61,8 @@ def loss(estimated_labels, ground_truth, variables, FLAGS):
     
     ratio = 0.2
     class_weight = tf.constant([ratio, 1.0 - ratio])
-<<<<<<< HEAD
-    weighted_logits = tf.mul(logits, class_weight) # shape [batch_size, 2]
-=======
     weighted_logits = tf.mul(logits, class_weight)  # shape [batch_size, 2]
 
->>>>>>> 0d481df0930c87cd4d193d7ed909004be461a2dc
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(weighted_logits, labels)
     
     cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
@@ -108,7 +104,7 @@ class Sequence_Classifier():
            
 	    zz = tf.reduce_max(input_sequence)
 	    input_sequence = tf.div(input_sequence, zz)     
-            batch_mean1, batch_var1 = tf.nn.moments(input_sequence,[0, 1])
+            batch_mean1, batch_var1 = tf.nn.moments(input_sequence, [0, 1])
             
 
             input_sequence_bn = tf.nn.batch_normalization(input_sequence, batch_mean1, batch_var1, None, None, 0.00001)
