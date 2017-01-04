@@ -60,7 +60,7 @@ def loss(estimated_labels, ground_truth, variables, FLAGS):
     labels = tf.squeeze(ground_truth[-1])
     ratio = 0.2
     class_weight = tf.constant([ratio, 1.0 - ratio])
-    weighted_logits = tf.mul(logits, class_weight) # shape [batch_size, 2]
+    weighted_logits = tf.mul(logits, class_weight)  # shape [batch_size, 2]
 
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(weighted_logits, labels)
     
@@ -100,8 +100,11 @@ class Sequence_Classifier():
         with tf.variable_scope(self.name):
             if reuse == True:
                 tf.get_variable_scope().reuse_variables()
-                
-            batch_mean1, batch_var1 = tf.nn.moments(input_sequence,[0])
+            
+#             beta = tf.Variable(tf.constant(0.0, shape=[self.flags.input_size]), name='beta', trainable=True)
+#             gamma = tf.Variable(tf.constant(1.0, shape=[self.flags.input_size]), name='gamma', trainable=True)
+            
+            batch_mean1, batch_var1 = tf.nn.moments(input_sequence, [0])
 
             input_sequence_bn = tf.nn.batch_normalization(input_sequence, batch_mean1, batch_var1, None, None, 0.00001)
                 
@@ -169,7 +172,7 @@ class Sequence_Classifier_With_Convolution():
 
     def inference(self, input_sequence_orig, reuse=False):
         with tf.variable_scope(self.name):
-            batch_mean1, batch_var1 = tf.nn.moments(input_sequence_orig,[0])
+            batch_mean1, batch_var1 = tf.nn.moments(input_sequence_orig, [0])
 
             input_sequence_bn = tf.nn.batch_normalization(input_sequence_orig, batch_mean1, batch_var1, None, None, 0.00001)
             # Run the 1-D conv
