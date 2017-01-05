@@ -15,18 +15,13 @@ from sequence_model import Sequence_Classifier_With_Convolution
 
 def variable_summaries(var, name):
     """Attach a lot of summaries to a Tensor."""
-    print 'variable_summaries', var, name
-    with tf.name_scope('variable_summaries'):
-        mean = tf.reduce_mean(var)
-	print mean
-        tf.scalar_summary('mean/' + name, mean)
-        with tf.name_scope('stddev'):
-            stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
-	print stddev
-        tf.summary.scalar('sttdev/' + name, stddev)
-        tf.summary.scalar('max/' + name, tf.reduce_max(var))
-        tf.summary.scalar('min/' + name, tf.reduce_min(var))
-        tf.summary.histogram(name, var)
+    mean = tf.reduce_mean(var)
+    tf.scalar_summary('mean/' + name, mean)
+    stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
+    tf.summary.scalar('sttdev/' + name, stddev)
+    tf.summary.scalar('max/' + name, tf.reduce_max(var))
+    tf.summary.scalar('min/' + name, tf.reduce_min(var))
+    tf.summary.histogram(name, var)
 
 
 
@@ -171,8 +166,8 @@ def train(FLAGS):
     saver = tf.train.Saver(tf.all_variables())
 
     # Build the summary operation from the last tower summaries.
-    #sum_var = tf.get_collection(tf.GraphKeys.SUMMARIES, 'variable_summaries')
-    summary_op = tf.summary.merge_all()
+    sum_var = tf.get_collection(tf.GraphKeys.SUMMARIES, 'sequence_model')
+    summary_op = tf.summary.merge([summaries, sum_var])
     
     # Build an initialization operation to run below.
     init = tf.initialize_all_variables()    
@@ -185,7 +180,7 @@ def train(FLAGS):
     # Build an initialization operation to run below.
     sess = tf.Session(config=config)
     sess.run(init)
-    summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph)
+    summary_writer = tf.summary.FileWriter(FLAGS.train_dir, sess.graph)
 
     tf.train.start_queue_runners(sess=sess)
 
