@@ -55,21 +55,18 @@ def loss(estimated_labels, ground_truth, variables, FLAGS):
     ground_truth = tf.transpose(ground_truth, [1, 0, 2])  # permute sequence_size and batch_size
     ground_truth = tf.unpack(ground_truth)
 
-    
     logits = estimated_labels[-1]
     labels = tf.squeeze(ground_truth[-1])
-    
-    ratio = 0.2
-    class_weight = tf.constant([ratio, 1.0 - ratio])
+    print 'labels', labels 
+    ratio = 0.1
+    class_weight = tf.constant([ratio, 100])
     weighted_logits = tf.mul(logits, class_weight)  # shape [batch_size, 2]
-
+    print 'weighted_logits', weighted_logits
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(weighted_logits, labels)
     
     cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
     
     tf.add_to_collection('losses', cross_entropy_mean)
-    
-    loss = cross_entropy_mean + l2_regularization(variables, FLAGS.weight_decay)
     
     return tf.add_n(tf.get_collection('losses'), name='total_loss')
 
@@ -102,13 +99,13 @@ class Sequence_Classifier():
             if reuse == True:
                 tf.get_variable_scope().reuse_variables()
            
-	    zz = tf.reduce_max(input_sequence)
-	    input_sequence = tf.div(input_sequence, zz)     
-            batch_mean1, batch_var1 = tf.nn.moments(input_sequence, [0, 1])
+	    #zz = tf.reduce_max(input_sequence)
+	    #input_sequence = tf.div(input_sequence, zz)     
+            #batch_mean1, batch_var1 = tf.nn.moments(input_sequence, [0, 1])
             
 
-            input_sequence_bn = tf.nn.batch_normalization(input_sequence, batch_mean1, batch_var1, None, None, 0.00001)
-            print 'shape', input_sequence_bn.get_shape()    
+            #input_sequence_bn = tf.nn.batch_normalization(input_sequence, batch_mean1, batch_var1, None, None, 0.00001)
+            #print 'shape', input_sequence_bn.get_shape()    
             # Define weights
 #             sequence_classifier_weights = tf.Variable(tf.random_normal([self.number_hidden, self.output_size]), name='output_weights')
             sequence_classifier_weights = _variable_with_weight_decay(name='output_weights', shape=[self.number_hidden, self.output_size], FLAGS=self.flags)
@@ -116,7 +113,7 @@ class Sequence_Classifier():
             sequence_classifier_biases = _variable_with_weight_decay(name='output_biases', shape=[self.output_size], FLAGS=self.flags)
             
             #
-            sequence_classifier_input = tf.reshape(input_sequence_bn, [self.batch_size, self.sequence_size, self.input_size]) 
+            sequence_classifier_input = tf.reshape(input_sequence, [self.batch_size, self.sequence_size, self.input_size]) 
 
             # input_sequence shape: (batch_size, n_steps, input_size)    
             sequence_classifier_input = tf.transpose(sequence_classifier_input, [1, 0, 2])  # permute sequence_size and batch_size

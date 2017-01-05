@@ -15,15 +15,18 @@ from sequence_model import Sequence_Classifier_With_Convolution
 
 def variable_summaries(var, name):
     """Attach a lot of summaries to a Tensor."""
-    with tf.name_scope('summaries'):
+    print 'variable_summaries', var, name
+    with tf.name_scope('variable_summaries'):
         mean = tf.reduce_mean(var)
+	print mean
         tf.scalar_summary('mean/' + name, mean)
         with tf.name_scope('stddev'):
             stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
-        tf.scalar_summary('sttdev/' + name, stddev)
-        tf.scalar_summary('max/' + name, tf.reduce_max(var))
-        tf.scalar_summary('min/' + name, tf.reduce_min(var))
-        tf.histogram_summary(name, var)
+	print stddev
+        tf.summary.scalar('sttdev/' + name, stddev)
+        tf.summary.scalar('max/' + name, tf.reduce_max(var))
+        tf.summary.scalar('min/' + name, tf.reduce_min(var))
+        tf.summary.histogram(name, var)
 
 
 
@@ -53,9 +56,9 @@ def tower_loss(scope, FLAGS, sequence_reader, sequence_classifier):
         # Remove 'tower_[0-9]/' from the name in case this is a multi-GPU training
         # session. This helps the clarity of presentation on tensorboard.
         loss_name = re.sub('%s_[0-9]*/' % 'sequence_model_tower', '', l.op.name)
-        tf.scalar_summary(loss_name, l)
-
+        tf.summary.scalar(loss_name, l)
     return total_loss
+
 
 def average_gradients(tower_grads):
     """Calculate the average gradient for each shared variable across all towers.
@@ -168,8 +171,9 @@ def train(FLAGS):
     saver = tf.train.Saver(tf.all_variables())
 
     # Build the summary operation from the last tower summaries.
-    summary_op = tf.merge_summary(summaries)
-
+    #sum_var = tf.get_collection(tf.GraphKeys.SUMMARIES, 'variable_summaries')
+    summary_op = tf.summary.merge_all()
+    
     # Build an initialization operation to run below.
     init = tf.initialize_all_variables()    
     
@@ -189,7 +193,6 @@ def train(FLAGS):
         start_time = time.time()
         _, loss_value = sess.run([train_op, loss])
         duration = time.time() - start_time
-        print(loss_value, duration)
         
         if step % 100 == 0:
             summary_str = sess.run(summary_op)
